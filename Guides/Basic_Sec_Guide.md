@@ -6,7 +6,9 @@ If you have never connected to your server's Command Line Interface (CLI), this 
 
 There are a few ways to SSH into a server. You can either use your computer's terminal/command prompt or install an SSH client such as PuTTY or Termius.
 
+
 **Links to SSH Clients:**
+
 ![PuTTY](</Pictures/Basic_Sec_Guide/Basic_Sec_Guide1.png>)
 - [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
 
