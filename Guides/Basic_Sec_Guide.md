@@ -70,18 +70,37 @@ To configure ports on your server, you can use UFW (Universal Firewall). UFW is 
 
 First, make sure to download UFW by running the following command:
 
-![Downloading UFW](</Pictures/Basic_Sec_Guide/Basic_Sec_Guide6.png>)
+``` shell
+root@guide:~# sudo apt-get install ufw
+```
 
 Once UFW is downloaded, you can start configuring it for your needs. First, identify the services that require specific open ports. To open port 22 for SSH, use the following command:
 
-![Opening Port SSH](</Pictures/Basic_Sec_Guide/Basic_Sec_Guide7.png>)
+``` shell
+root@guide:~# sudo ufw allow 22
+```
 
 For example, to open port 3306 as TCP and block port 53 as UDP, you can use the following commands:
 
-![Opening and Blocking Ports](</Pictures/Basic_Sec_Guide/Basic_Sec_Guide8.png>)
+``` shell
+root@guide:~# sudo ufw allow 3306/tcp
+Rules updated
+Rules updated (v6)
+root@guide:~# sudo ufw deny 53/udp
+Rules updated
+Rules updated (v6)
+root@guide:~# 
+```
 
 Please ensure that you carefully consider the implications of
 
 Once you are done with opening/closing ports and configuring your UFW you can go ahead and enable it now by doing the following command
 
-![Enabling UFW](</Pictures/Basic_Sec_Guide/Basic_Sec_Guide9.png>)
+``` shell
+root@guide:~# systemctl start ufw
+root@guide:~# ufw enable
+Command may disrupt existing ssh connections. Proceed with operation (y|n)? y
+Firewall is active and enabled on system startup
+root@guide:~# 
+```
+
