@@ -56,6 +56,7 @@ The script will automatically perform the following tasks:
 Please make sure to run this script with sudo or root privileges for it to run properly.
 
 **Notice:** At the end of the script, it will ask you to create a new user. Follow the steps in the script carefully, as it will disable the root user and no longer allow SSH login with the root user.
+[Link to Script](https://github.com/powerthecoder/Linux-CybSec)
 
 ## What Are Ports and How to Open/Close Them?
 
