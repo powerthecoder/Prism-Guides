@@ -9,6 +9,7 @@
 --- Advanced ---
 # Connecting to the server
 # Updating and installing auto-update
+
 # Installing and configuring Fail2Ban
 # Installing and configuring UFW
 # Creating a new user and disabling root on SSHD
@@ -26,93 +27,96 @@
 
 
 
-[TITLE] Basic Guide
+[Title] Advanced CyberSecurity Guide (Linux)
 
-[SubTitle] Connecting to the server
+## Connecting to the Server
 
-If you have never connected to your servers CLI (Command Line Interface) this guide will teach you
-how to connect to the server via SSH (Secure Shell Protocol) 
+If you have never connected to your server's Command Line Interface (CLI), this guide will teach you how to connect to the server via SSH (Secure Shell Protocol).
 
-There are a few ways to SSH into a server. You can either use your computers terminal/command prompt or
-you can install a SSH clinet such as PuTTY or Termius and much more.
+There are a few ways to SSH into a server. You can either use your computer's terminal/command prompt or install an SSH client such as PuTTY or Termius.
 
-[Bold] Links to SSH Clients
-PuTTY https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
-Termius https://account.termius.com/
+**Links to SSH Clients:**
+![PuTTY](</Pictures/Basic_Sec_Guide/Basic_Sec_Guide1.png>)
+- [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
 
-in this example we will use the IP Address 192.168.1.2 and the default port for ssh is port 22
-with the username "root" and password "myguide"
+![Termius](</Pictures/Basic_Sec_Guide/Basic_Sec_Guide2.png>)
+- [Termius](https://account.termius.com/)
 
-(Picture with putty)
-[small text under saying "how to ssh with putty]
+In this example, we will use the IP Address 192.168.1.2, the default SSH port is 22, the username is "root," and the password is "myguide".
 
-(Picture with termius)
-[small text under saying "how to ssh with termius]
+**How to SSH with PuTTY:**
+1. Download and install PuTTY from the provided link.
+2. Launch PuTTY.
+3. Enter the server's IP address and port number.
+4. Select the SSH connection type.
+5. Click "Open" to establish the SSH connection.
 
+![SSH with PuTTY](</Pictures/Basic_Sec_Guide/Basic_Sec_Guide3.png>)
 
+**How to SSH with Termius:**
+1. Install Termius from the provided link.
+2. Launch Termius.
+3. Create a new host and enter the server's IP address, port number, username, and password.
+4. Save the host configuration.
+5. Connect to the server by selecting the saved host.
 
-[SubTitle] What does the script do
-
-Once you sucessfully log into your Linux server you can either manually install and configure
-security settings and software, or you can run this custom github script that will automate most
-security configurations and automatically install software that you would need.
-
-This script will automatically do the following
-
-# update and upgrade
-# install unattended-upgrades
-# configure unattended-upgrades
-# install fail2ban
-# configure fail2ban (->restart)
-# install ufw
-# enable and configure ufw (ask user for ports)
-# configure ufw to protect against portscans and botattacks *
-# install sshd
-# configure sshd (->restart) (no keys)
-# configure IPTables for PortScanning and BotAttacks
-# install portsentry
-# configure portsentry
-# install sshguard
-# configure sshguard
-# install and run chrootkit
-# create a new user for sudo and disable root
-
-Please make sure to run this script in sudo or root in order for it to run propperly.
-
-Notice at the end of the script it will ask you to create a new user, please ensure that you
-follow the steps in the script as it will disable the user root and will no longer allow you
-to ssh in with the user root.
-
-[SubTitle] What are ports and how to open/close them
-
-There are two ways that most people explain what a port is. You can either think of a port as a 
-Door to your home, the more ports you open the more doors you have. or
-A port is like poking a hole into your firewall.
-
-Network ports are something like communcation channels where servers or network can allow software
-to send data between the firewall.
-
-(Picture of Port list)
-[small text under saying "Here is a list of common ports that applications will use]
+![SSH with Termius](</Pictures/Basic_Sec_Guide/Basic_Sec_Guide4.png>)
 
 
+## Updating and installing unattended-upgrades
 
-[SubTitle] How to configure UFW
-UFW is a Universal Firewall for linux machines. We can use this to setup a basic but efficent 
-firewall with ease.
-First we are going to want to go ahead and make sure it is downloaded by doing the following command
+Once you successfully log into your Linux server, we will want to go ahead and Update as well as Upgrade your servers software.
+We can do that by running the following command.
 
-(Picture of downloading ufw)
+```shell
+root@guide:~# sudo apt-get update -y && sudo apt-get upgrade -y
+```
 
-once we download UFW we can start configuring it for our needs. First we are going to need to figure out 
-what services need what ports open. We will need to open the port for SSH which is port 22 and can be found
-in the picture of the port lists. In order to open port 22 we can do the following
+Once you have successfully updated and upgraded your software we can now go ahead and download a tool called autoupdate which will help automatically update your server on a schedule and can also be configured to automatically reboot your system once updates are complete.
 
-(Pictures of opening port SSH)
+We can install this software by running the following command
 
-For this next example we will only open port 3306 as tcp and then we will block port 53 as udp
+```shell
+root@guide:~# sudo apt-get install unattended-upgrades -y
+```
 
-(Picture of opening port 3307 and blocking 3306)
+Once this has been installed we can go ahead and go into the configuration files and start changing the settings.
+Run the following command to start editing the config files
+
+```shell
+root@guide:~# sudo nano /etc/apt/apt.conf.d/50unattended-upgrades
+```
+once we are in here you can add the following lines to the end of the config file
+
+```shell
+1 Unattended-Upgrade::Allowed-Origins {
+2 	"${distro_id}:${distro_codename}";
+3 	"${distro_id}:${distro_codename}-security";
+4 	"${distro_id}ESMApps:${distro_codename}-apps-security";
+5 	"${distro_id}ESM:${distro_codename}-infra-security";
+6 	"${distro_id}:${distro_codename}-updates";
+7 	"${distro_id}:${distro_codename}-proposed";
+8 	"${distro_id}:${distro_codename}-backports";
+9 };
+10
+11 Unattended-Upgrade::Remove-Unused-Dependencies "true";
+12 Unattended-Upgrade::Automatic-Reboot "false";
+13 
+14 Unattended-Upgrade::RandomSleep "0";
+15 Unattended-Upgrade::Periodic-Packages-Update-Interval "1";
+16 Unattended-Upgrade::Periodic-Upgrade "1";
+17 Unattended-Upgrade::Origins-Pattern "";
+```
+With these current settings, the server will automatically update your system every `1` hours and will not allow an automatic reboot of the server. 
+
+If you would like to have it automatically reboot the system you can change on line `12` from `Unattended-Upgrade::Automatic-Reboot "false";` to `Unattended-Upgrade::Automatic-Reboot "true";;` and this will automatically reboot the system if the update requires it to.
+
+If you want to make the server automatically update every `3` hours you can change it on line `15` from `Unattended-Upgrade::Periodic-Packages-Update-Interval "1";` to `Unattended-Upgrade::Periodic-Packages-Update-Interval "3";`
+
+If you want it to update at a specific time go ahead and add this line to it `Unattended-Upgrade::Automatic-Reboot-Time "12:00";` This will update the server everyday at 12:00 PM local time for the server.
+
+
+## Installing and Configuring Fail2Ban
 
 
 
