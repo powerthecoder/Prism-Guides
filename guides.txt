@@ -1,0 +1,140 @@
+--- BASIC ---
+# Connecting to the server
+# What the script does and how to install and run it
+# Creating a new user (sudo privlages)
+# what are ports and how to open/close them
+# basics of UFW
+
+--- Advanced ---
+# Connecting to the server
+# Updating and installing auto-update
+# Installing and configuring Fail2Ban
+# Installing and configuring UFW
+# Creating a new user and disabling root on SSHD
+# Making SSH Keys
+# Installing and configuring PortSentry
+# Installing and configuring SSHGuard
+# Installing and Running RKHunter
+# Installing and configuring OpenVAS and other vulnerability scanners
+# IDS vs IPS
+# how to check for open ports
+# how to view process running
+# how to view who is connected to the server
+# WireGuard or OpenVPN and how to install both
+
+
+
+
+[TITLE] Basic Guide
+
+[SubTitle] Connecting to the server
+
+If you have never connected to your servers CLI (Command Line Interface) this guide will teach you
+how to connect to the server via SSH (Secure Shell Protocol) 
+
+There are a few ways to SSH into a server. You can either use your computers terminal/command prompt or
+you can install a SSH clinet such as PuTTY or Termius and much more.
+
+[Bold] Links to SSH Clients
+PuTTY https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
+Termius https://account.termius.com/
+
+in this example we will use the IP Address 192.168.1.2 and the default port for ssh is port 22
+with the username "root" and password "myguide"
+
+(Picture with putty)
+[small text under saying "how to ssh with putty]
+
+(Picture with termius)
+[small text under saying "how to ssh with termius]
+
+
+
+[SubTitle] What does the script do
+
+Once you sucessfully log into your Linux server you can either manually install and configure
+security settings and software, or you can run this custom github script that will automate most
+security configurations and automatically install software that you would need.
+
+This script will automatically do the following
+
+# update and upgrade
+# install unattended-upgrades
+# configure unattended-upgrades
+# install fail2ban
+# configure fail2ban (->restart)
+# install ufw
+# enable and configure ufw (ask user for ports)
+# configure ufw to protect against portscans and botattacks *
+# install sshd
+# configure sshd (->restart) (no keys)
+# configure IPTables for PortScanning and BotAttacks
+# install portsentry
+# configure portsentry
+# install sshguard
+# configure sshguard
+# install and run chrootkit
+# create a new user for sudo and disable root
+
+Please make sure to run this script in sudo or root in order for it to run propperly.
+
+Notice at the end of the script it will ask you to create a new user, please ensure that you
+follow the steps in the script as it will disable the user root and will no longer allow you
+to ssh in with the user root.
+
+[SubTitle] What are ports and how to open/close them
+
+There are two ways that most people explain what a port is. You can either think of a port as a 
+Door to your home, the more ports you open the more doors you have. or
+A port is like poking a hole into your firewall.
+
+Network ports are something like communcation channels where servers or network can allow software
+to send data between the firewall.
+
+(Picture of Port list)
+[small text under saying "Here is a list of common ports that applications will use]
+
+
+
+[SubTitle] How to configure UFW
+UFW is a Universal Firewall for linux machines. We can use this to setup a basic but efficent 
+firewall with ease.
+First we are going to want to go ahead and make sure it is downloaded by doing the following command
+
+(Picture of downloading ufw)
+
+once we download UFW we can start configuring it for our needs. First we are going to need to figure out 
+what services need what ports open. We will need to open the port for SSH which is port 22 and can be found
+in the picture of the port lists. In order to open port 22 we can do the following
+
+(Pictures of opening port SSH)
+
+For this next example we will only open port 3306 as tcp and then we will block port 53 as udp
+
+(Picture of opening port 3307 and blocking 3306)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
