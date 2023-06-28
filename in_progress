@@ -118,6 +118,22 @@ If you want it to update at a specific time go ahead and add this line to it `Un
 
 ## Installing and Configuring Fail2Ban
 
+Fail2Ban is a open source IPS (Intrusion Prevention System) that helps protect against unauthorized attacks. Fail2Ban monitors log files and searches for patterns that would indicate malicious activity and can also help by "banning" or deny traffic from an IP address that is constantly getting failed login attempts.
+
+We can install this software by doing the following
+```bash
+root@guide:~# sudo apt-get install fail2ban
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
