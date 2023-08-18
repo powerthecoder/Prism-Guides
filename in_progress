@@ -3,15 +3,14 @@
 # What the script does and how to install and run it
 # Creating a new user (sudo privlages)
 # what are ports and how to open/close them
-
 # basics of UFW
 
 --- Advanced ---
 # Connecting to the server
 # Updating and installing auto-update
-
 # Installing and configuring Fail2Ban
 # Installing and configuring UFW
+
 # Creating a new user and disabling root on SSHD
 # Making SSH Keys
 # Installing and configuring PortSentry
@@ -117,8 +116,113 @@ If you want it to update at a specific time go ahead and add this line to it `Un
 
 
 ## Installing and Configuring Fail2Ban
+Fail2ban is a powerful and widely-used software tool that helps enhance the security of your server by preventing unauthorized access and brute-force attacks. It works by monitoring log files for suspicious activities and then dynamically blocking the IP addresses of potential attackers.
+
+To install Fail2ban on your system, open a terminal and run the following commands:
+```shell
+root@guide:~# sudo apt-get install fail2ban
+```
+once we install fail2ban we will want to go ahead and configure fail2ban to properlly work.
+Lets start off creating a backup of the current configuration file for fail2ban by running the following command
+```shell
+root@guide:~# sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+```
+Now that we have our configuration file saved lets go ahead and start customizing our config file.
+
+We are going to go ahead and enter the configuration file by using the following command
+
+```shell
+root@guide:~# sudo nano /etc/fail2ban/jail.local
+```
+
+In this guide we are going to only configure the sshd for the Fail2ban, you can create custom rules for different services as needed.
+
+```shell
+[sshd]
+enabled = true
+port = ssh  # Change to your SSH port if not using the default (22)
+maxretry = 5  # Number of login attempts
+bantime = 3600  # Ban duration in seconds (1 hour)
+```
+You can change these numbers as you wish to better suit your system and services needs. 
+
+Once the configuration step is complete we can start and check the status of the fail2ban service by entering the following command
+
+```shell
+root@guide:~# sudo systemctl start fail2ban
+root@guide:~# sudo systemctl enable fail2ban
+```
+We can check the status of Fail2ban and see which IP Addreses are currently banned 
+```shell
+root@guide:~# sudo fail2ban-client status
+```
+If you need to unban an IP Address we can do the following command
+```shell
+root@guide:~# sudo fail2ban-client set <JAIL_NAME> unbanip <IP_ADDRESS> 
+```
+Replacing `<JAIL_NAME>` with the name of the jail in this case it will be `sshd` and `<IP_ADDRESS>` with the banned IP
 
 
+## Installing and configuring UFW
+
+UFW is a simplified tool for managing iptables firewall rules on Linux systems. It provides an easy way to configure and manage firewall settings to enhance your server's security.
+
+UFW should come preinstalled with your linux operating system, in case it is not installed we can install it using the following commnad
+```shell
+root@guide:~# sudo apt-get install ufw
+```
+
+##### Firewall Operations
+
+First we are going to start by enabling UFW with the following command
+```shell
+root@guide:~# sudo ufw enable
+```
+This will turn the firewall on and activate the default rules. (typically allowing only SSH)
+
+In this example we will go ahead and allow `ssh` `https` `ftp` and we will block ports `6969` as udp and block port `1234`.
+
+```shell
+root@guide:~# sudo ufw allow ssh
+root@guide:~# sudo ufw allow https
+root@guide:~# sudo ufw allow ftp
+root@guide:~# sudo ufw deny 6969/udp
+root@guide:~# sudo ufw deny 1234
+```
+Now we will check the status of our UFW by doing the following command
+```shell
+root@guide:~# sudo ufw status
+```
+If we messed something up and want to delete a rule, we will first make UWF give us a list of all the rules in a numbered order.
+```shell
+root@guide:~# sudo ufw status numbered
+```
+```shell
+Status: active
+     To                         Action      From
+     --                         ------      ----
+[ 1] 22/tcp                     ALLOW IN    Anywhere                       
+[ 2] 443/tcp                    ALLOW IN    Anywhere
+[ 3] 21/tcp                     ALLOW IN    Anywhere  
+[ 4] 6969/udp                   DENY IN     Anywhere      
+[ 5] 1234/tcp                   DENY IN     Anywhere     
+[ 6] 22/tcp (v6)                ALLOW IN    Anywhere  (v6)                     
+[ 7] 443/tcp (v6)               ALLOW IN    Anywhere  (v6)
+[ 8] 21/tcp (v6)                ALLOW IN    Anywhere  (v6)  
+[ 9] 6969/tcp (v6)              DENY IN     Anywhere  (v6)     
+[ 10] 1234 (v6)                 DENY IN     Anywhere  (v6)              
+
+```
+In this example we will delete the rule for the port `1234` we can do this by entering the following command
+```shell
+root@guide:~# sudo ufw delete 5
+```
+(Note that this will only delete number 5 but will not delete 10)
+
+For more advanced configurations, you can specify a protocol and port combination, such as:
+```shell
+root@guide:~# sudo ufw allow proto tcp from <source_ip> to any port <port_number>
+```
 
 
 
