@@ -10,8 +10,8 @@
 # Updating and installing auto-update
 # Installing and configuring Fail2Ban
 # Installing and configuring UFW
-
 # Creating a new user and disabling root on SSHD
+
 # Making SSH Keys
 # Installing and configuring PortSentry
 # Installing and configuring SSHGuard
@@ -224,7 +224,70 @@ For more advanced configurations, you can specify a protocol and port combinatio
 root@guide:~# sudo ufw allow proto tcp from <source_ip> to any port <port_number>
 ```
 
+## Creating a new user and disabling root on SSHD
 
+Securing a Linux system involves creating a new user with sudo privileges while disabling the root account. This safeguards against unauthorized access to the root account, requiring an administrator password for sudo commands. By promoting the principle of least privilege, this approach reduces the risk of accidental or malicious system damage. This configuration enhances overall security, ensuring controlled access and accountability in administrative actions.
+
+We will first start by creating a new user to prevent acidental lockout of our own account. 
+```shell
+root@guide:~# adduser mynewname
+root@guide:~# usermod -aG sudo mynewname
+Adding user `mynewname' ...
+Adding new group `mynewname' (1000) ...
+Adding new user `mynewname' (1000) with group `mynewname' ...
+Creating home directory `/home/mynewname' ...
+Copying files from `/etc/skel' ...
+New password: 
+Retype new password: 
+passwd: password updated successfully
+Changing the user information for mynewname
+Enter the new value, or press ENTER for the default
+        Full Name []: <Full Name Here>
+        Room Number []: 
+        Work Phone []: 
+        Home Phone []: 
+        Other []: 
+Is the information correct? [Y/n]
+# we will type "y" here to confirm that the information is correct
+```
+In this illustration, the username "mynewname" has been employed. Following user creation, a validation step involves logging in as the new user and executing a basic sudo command, ensuring the proper functionality of sudo privileges. This serves to confirm the successful configuration of administrative access for the designated user.
+```shell
+root@guide:~# su - mynewname
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+mynewname@guide:~# sudo ls
+[sudo] password for mynewname: 
+```
+Having confirmed the proper configuration of sudo privileges, the next step involves securing the system by disabling direct root logins. This can be achieved through the following commands:
+
+```shell
+mynewname@guide:~# sudo passwd -l root
+passwd: password expiry information changed.
+mynewname@guide:~# 
+```
+now we can ensure that the root account has been locked by doing the following command:
+```shell
+mynewname@guide:~# sudo passwd -S root
+root L 11/28/2023 0 99999 7 -1
+```
+With these steps, the root account is effectively disabled, and direct logins as root are prevented. It's a good security practice to use a regular user account with sudo privileges for administrative tasks instead of relying on the root account.
+
+This was the most simple way of locking the root account. Now we will disable root from being able to login using SSHD.
+
+```shell
+mynewname@guide:~# sudo nano /etc/ssh/sshd_config
+```
+We will want to find the `PermitRootLogin` and set it to `no`:
+```shell
+PermitRootLogin no
+```
+Now, root login via SSH should be disabled on your Ubuntu system. After making this change, make sure you have an alternative user with sudo privileges to ensure you can still access and administer the system. Always exercise caution when modifying SSH configurations to avoid being locked out of the system.
+
+We will now restart the service to ensure that all changes have been sucsessfully changed and saved.
+```
+mynewname@guide:~# sudo service ssh restart
+```
 
 
 
